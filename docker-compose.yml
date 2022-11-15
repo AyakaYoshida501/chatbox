@@ -1,0 +1,50 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend/next
+      dockerfile: Dockerfile
+    container_name: frontend
+    tty: true 
+    stdin_open: true
+    env_file:
+      - ./frontend/next/.env
+    volumes:
+      - ./frontend/next:/usr/src/app
+    # app-nextに移動してからrun
+    environment:
+      - WATCHPACK_POLLING=true
+    ports:
+      - 3000:3000
+  backend:
+    build: 
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: backend
+    # コンテナの永続化
+    tty: true
+    env_file:
+      - ./backend/.env
+     # ローカルパス要確認
+    volumes:
+      - ./backend:/go/src/backend
+    ports:
+      - 8080:8080
+  db:
+    build: 
+      context: .
+      dockerfile: ./db/Dockerfile
+    container_name: db
+    environment:
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'pass'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: portfolio_db
+      TZ: "Asia/Tokyo"
+    volumes:
+      - db:/var/lib/db
+    ports:
+      - 3306:3306
+      
+# volumes:
+#   mysql-db:
