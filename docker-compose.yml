@@ -1,0 +1,57 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: .
+       # パス要確認
+      dockerfile: ./frontend/Dockerfile
+    container_name: frontend
+    tty: true 
+    stdin_open: true
+    # env_file:
+    #   - ./frontend/.env
+    volumes:
+      - ./:/usr/src/app
+    command: sh -c "cd next && npm run dev"
+    # frontendに移動してからrun
+    # command: sh -c "npm run dev"
+    environment:
+    # tsでホットリロードを効かせる
+      - WATCHPACK_POLLING=true
+    ports:
+      - 3000:3000
+  backend:
+    build: 
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: backend
+    # コンテナの永続化
+    tty: true
+    # env_file:
+    #   - ./backend/.env
+     # ローカルパス要確認
+    volumes:
+      - ./backend:/go/src/backend
+    ports:
+      - 8080:8080
+  db:
+    build: 
+      context: .
+      dockerfile: ./db/Dockerfile
+    # platformはosがぞれぞれ違うから必要(M1に必要)
+    platform: linux/x86_64 
+    container_name: db
+    # Dockerfileに書くものは省く?
+    environment:
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'pass'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: aikon_db
+      TZ: "Asia/Tokyo"
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - 3306:3306
+      
+volumes:
+  db:
