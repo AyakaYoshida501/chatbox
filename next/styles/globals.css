@@ -15,6 +15,12 @@ a {
   box-sizing: border-box;
 }
 
+.myPhoto img{
+  border-radius: 50%
+}
+.skills img {
+  margin-right: 5px;
+}
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
