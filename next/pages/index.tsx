@@ -13,7 +13,7 @@ export default function Home() {
 
       <main className='styleMain'>
         <h1>my portfolio</h1>
-        <div className='myPhoto'>
+        <div className='introduceMe'>
         <img src="/mypic.JPG" alt="mypic" width={200} height={200} />  {/* 変更可能にする */}
           <p>あやか</p>
         </div>
@@ -25,7 +25,7 @@ export default function Home() {
         </div>
         <div className='skills'>
           <h2>skills</h2>
-          <p text-align="left">
+          <p text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
           <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
           <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/>
           <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/>
