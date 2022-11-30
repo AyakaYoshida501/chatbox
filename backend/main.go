@@ -31,17 +31,17 @@ func connectionDB() *sql.DB {
     if err != nil {
         log.Println("Err1")
     }
-    // log.Println("接続OK");
-    defer db.Close()
+    log.Println("接続OK");
+    //defer db.Close()
     return db
 }
 
-type his struct {
-    History string `json:history`
+type History struct {
+    His string `json:his`
 }
 func postMyhis(w http.ResponseWriter, r *http.Request) {
     db :=connectionDB()//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
-    //defer db.Close()
+    defer db.Close()
     b, err := ioutil.ReadAll(r.Body)
     if err != nil {
         log.Println("io error")
@@ -49,15 +49,15 @@ func postMyhis(w http.ResponseWriter, r *http.Request) {
     }
 
     jsonBytes := ([]byte)(b)
-    data := new(his)
+    data := new(History)
     if err := json.Unmarshal(jsonBytes, data); err != nil {
         log.Println("JSON Unmarshal error:", err)
         return
     }
 
-    _, err = db.Exec("INSERT INTO histories (his) VALUES(?)", data.History) // スペースありの一列で入ってくるから\nで改行する必要あり
+    _, err = db.Exec("INSERT INTO histories (his) VALUES(?)", data.His) // スペースありの一列で入ってくるから\nで改行する必要あり
     if err != nil {
-        log.Println("insert error!")
+        log.Println("insert error!", err)//sql: database is closed
     }
 }
 
@@ -72,6 +72,6 @@ func main() {
     connectionDB()
 
     http.HandleFunc("/", helloHandler)
-    // // http.HandleFunc("/postMyhis", postMyhis)
+    http.HandleFunc("/postMyhis", postMyhis)
     http.ListenAndServe(":8080", nil)
 }
