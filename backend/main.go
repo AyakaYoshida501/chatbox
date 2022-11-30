@@ -61,6 +61,41 @@ func postMyhis(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func getHistoriesRows(db *sql.DB) *sql.Rows { 
+    rows, err := db.Query("SELECT * FROM histories")
+    if err != nil {
+        log.Println("get histories error!", err)    
+    }
+    return rows
+}
+
+func getHistories(w http.ResponseWriter, r *http.Request) {
+    db := connectionDB()
+    defer db.Close()
+    rows := getHistoriesRows(db) // 行データ取得
+    history := History{}//
+    var resulthistory [] history//
+    for rows.Next() {
+        error := rows.Scan(&history.Id, &history.His)//
+        if error != nil {
+            log.Println("scan error", error)
+        } else {
+            resulthistory = append(resulthistory, history)
+        }
+    }
+    var buf bytes.Buffer 
+    enc := json.NewEncoder(&buf) 
+    if err := enc.Encode(&resulthistory); err != nil {
+        log.Fatal(err)
+    }
+    log.Printf(buf.String())
+
+    _, err := fmt.Fprint(w, buf.String()) 
+    if err != nil {
+        return
+    }
+}
+
 func main() {
     envLoad()
     colog.SetDefaultLevel(colog.LDebug)
@@ -73,5 +108,6 @@ func main() {
 
     http.HandleFunc("/", helloHandler)
     http.HandleFunc("/postMyhis", postMyhis)
+    http.HandleFunc("/getHistories", getHistories)
     http.ListenAndServe(":8080", nil)
 }
