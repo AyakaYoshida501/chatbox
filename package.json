@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "create-next-app": "^13.0.3"
+    "axios": "^1.2.0",
+    "create-next-app": "^13.0.3",
+    "next-http-proxy-middleware": "^1.2.5"
   }
 }

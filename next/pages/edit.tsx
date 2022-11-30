@@ -1,5 +1,8 @@
+// import axios from 'axios'
 import Head from 'next/head'
 import { useState } from 'react'
+import { Axios } from "../lib/api";
+// import type { NextPage } from "next";
 
 
 export default function Home() {
@@ -8,9 +11,12 @@ export default function Home() {
 
     const postHistory = () =>{ //toDo
         const data = {
-            myHis: history 
+            "His": history 
         }
-        console.log(data)
+        Axios.post(`api/proxy/postMyhis`, data)
+        .then(res => {
+            console.log(res);
+        })
     }
     const postSkill = () =>{ //toDo
         const data = {
@@ -39,16 +45,20 @@ export default function Home() {
                 </div>
                 <div className='projects'>
                     <h2>作ったもの</h2>
+                    <form method="post" encType="multipart/form-data">
+                        <input type="file" name="sakuhin" accept='image/*' multiple/>
+                        <button type="submit">送信する</button>
+                    </form>
                 </div>
                 <div className='skills'>
                     <h2>skills</h2>
-                    <p text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
+                    <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
                     <div className='myHistoryEdit'>
                         <textarea className='skill' cols={50} rows={10} value={skill} onChange={(e) => setSkill(e.target.value)}></textarea>
                         <button className='postHSkillBtn' onClick={postSkill}>決定</button>
                     </div>
 
-                    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
+                    {/* <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/>
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/>
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/go/go-original-wordmark.svg" alt="go" width="40" height="40"/> 
@@ -58,8 +68,8 @@ export default function Home() {
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="express" width="40" height="40"/> 
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="40" height="40"/>
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/firebase/firebase-plain-wordmark.svg" alt="firebase" width="40" height="40"/>
-                    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="40" height="40"/>
-                    </p>
+                    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="40" height="40"/> */}
+                    </div>
                 </div>
 
             </main>
