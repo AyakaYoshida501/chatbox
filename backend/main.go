@@ -7,6 +7,7 @@ import (
     "os"
     "io/ioutil"
     "encoding/json"
+    "bytes"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -37,6 +38,7 @@ func connectionDB() *sql.DB {
 }
 
 type History struct {
+    Id int `json:id`
     His string `json:his`
 }
 func postMyhis(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +76,7 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     defer db.Close()
     rows := getHistoriesRows(db) // 行データ取得
     history := History{}//
-    var resulthistory [] history//
+    var resulthistory [] History//
     for rows.Next() {
         error := rows.Scan(&history.Id, &history.His)//
         if error != nil {
@@ -96,6 +98,33 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+type skillicon struct {
+    Id int `json:id`
+    Icons string `json:icon`
+}
+func postIcons(w http.ResponseWriter, r *http.Request) {
+    db :=connectionDB()//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
+    defer db.Close()
+    b, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        log.Println("io error")
+        return
+    }
+
+    jsonBytes := ([]byte)(b)
+    data := new(skillicon)
+    if err := json.Unmarshal(jsonBytes, data); err != nil {
+        log.Println("JSON Unmarshal error:", err)
+        return
+    }
+
+    _, err = db.Exec("INSERT INTO skillIcons (icons) VALUES(?)", data.Icons) // スペースありの一列で入ってくるから\nで改行する必要あり
+    if err != nil {
+        log.Println("insert error!", err)//sql: database is closed
+    }
+}
+
+
 func main() {
     envLoad()
     colog.SetDefaultLevel(colog.LDebug)
@@ -109,5 +138,6 @@ func main() {
     http.HandleFunc("/", helloHandler)
     http.HandleFunc("/postMyhis", postMyhis)
     http.HandleFunc("/getHistories", getHistories)
+    http.HandleFunc("/postIcons", postIcons)
     http.ListenAndServe(":8080", nil)
 }

@@ -1,15 +1,14 @@
-// import axios from 'axios'
+import axios from 'axios'
 import Head from 'next/head'
 import { useState } from 'react'
 import { Axios } from "../lib/api";
 // import type { NextPage } from "next";
 
-
-export default function Home() {
+export default function Home(resOfHistory: any) {
     const [history, setHistory] = useState<string>('')
     const [skill, setSkill] = useState<string>('')
 
-    const postHistory = () =>{ //toDo
+    const postHistory = () =>{ 
         const data = {
             "His": history 
         }
@@ -18,13 +17,16 @@ export default function Home() {
             console.log(res);
         })
     }
-    const postSkill = () =>{ //toDo
+    const postSkill = () =>{ 
         const data = {
-            skills: skill 
+            "Icons": skill 
         }
-        console.log(data)
+        Axios.post(`api/proxy/postIcons`, data)
+        .then(res => {
+            console.log(res);
+        })
     }
-
+    {console.log(resOfHistory.resOfHistory[0].His)}
     return (
         <div className='container'>
             <Head>
@@ -42,6 +44,7 @@ export default function Home() {
                         <textarea className='history' cols={50} rows={10} value={history} onChange={(e) => setHistory(e.target.value)}></textarea>
                         <button className='postHistoryBtn' onClick={postHistory}>決定</button>
                     </div>
+                    {resOfHistory.resOfHistory[0].His}
                 </div>
                 <div className='projects'>
                     <h2>作ったもの</h2>
@@ -55,7 +58,7 @@ export default function Home() {
                     <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
                     <div className='myHistoryEdit'>
                         <textarea className='skill' cols={50} rows={10} value={skill} onChange={(e) => setSkill(e.target.value)}></textarea>
-                        <button className='postHSkillBtn' onClick={postSkill}>決定</button>
+                        <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
                     </div>
 
                     {/* <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
@@ -71,9 +74,25 @@ export default function Home() {
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="40" height="40"/> */}
                     </div>
                 </div>
-
             </main>
         </div>
 
     )
 }
+
+export async function getServerSideProps() {
+    const res = await axios.get(`${process.env.API}/getHistories`, {
+    });
+    const resOfHistory = await res.data;
+    // {console.log(history)}
+    // {console.log(typeof history)}
+    // {console.log(typeof history[0])}
+    // {console.log(history[0].His)}
+    // {console.log(typeof history[0].His)}
+  
+    return {
+        props: {
+            resOfHistory
+        },
+    };
+  }
