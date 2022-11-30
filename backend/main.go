@@ -5,6 +5,8 @@ import (
     "database/sql"
     "log"
     "os"
+    "io/ioutil"
+    "encoding/json"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -38,8 +40,8 @@ type his struct {
     History string `json:history`
 }
 func postMyhis(w http.ResponseWriter, r *http.Request) {
-    connectionDB();//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
-
+    db :=connectionDB()//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
+    //defer db.Close()
     b, err := ioutil.ReadAll(r.Body)
     if err != nil {
         log.Println("io error")
@@ -53,7 +55,7 @@ func postMyhis(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    db, err = db.Exec("INSERT INTO histories (his) VALUES(?)", data.History) // スペースありの一列で入ってくるから\nで改行する必要あり
+    _, err = db.Exec("INSERT INTO histories (his) VALUES(?)", data.History) // スペースありの一列で入ってくるから\nで改行する必要あり
     if err != nil {
         log.Println("insert error!")
     }
