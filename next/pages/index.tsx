@@ -1,8 +1,10 @@
+import axios from 'axios'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
-export default function Home() {
+
+export default function Home(resOfHistory:any) {
   return (
     <div className={styles.container}>
       <Head>
@@ -15,10 +17,11 @@ export default function Home() {
         <h1>my portfolio</h1>
         <div className='introduceMe'>
         <img src="/mypic.JPG" alt="mypic" width={200} height={200} />  {/* 変更可能にする */}
-          <p>あやか</p>
+          <p>名前：よしだあやか</p>
         </div>
         <div className='myHistory'>
           <h2>経歴</h2>
+          {resOfHistory.resOfHistory[0].His}
         </div>
         <div className='projects'>
           <h2>作ったもの</h2>
@@ -55,4 +58,15 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+  const res = await axios.get(`${process.env.API}/getHistories`, {
+  });
+  const resOfHistory = await res.data;
+  return {
+      props: {
+          resOfHistory
+      },
+  };
 }
