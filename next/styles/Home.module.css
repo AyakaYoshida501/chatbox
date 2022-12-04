@@ -50,7 +50,7 @@
   text-align: center;
 }
 
-.description {
+/* .description {
   margin: 4rem 0;
   line-height: 1.5;
   font-size: 1.5rem;
@@ -64,16 +64,16 @@
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
 }
-
-.grid {
+ */
+/* .grid {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   max-width: 800px;
-}
+} */
 
-.card {
+/* .card {
   margin: 1rem;
   padding: 1.5rem;
   text-align: left;
@@ -107,22 +107,22 @@
   height: 1em;
   margin-left: 0.5rem;
 }
-
+ */
 @media (max-width: 600px) {
-  .grid {
+  /* .grid {
     width: 100%;
     flex-direction: column;
-  }
+  } */
 }
 
 @media (prefers-color-scheme: dark) {
-  .card,
+  /* .card,
   .footer {
     border-color: #222;
   }
   .code {
     background: #111;
-  }
+  } */
   .logo img {
     filter: invert(1);
   }
