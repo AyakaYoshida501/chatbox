@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Axios } from "../lib/api";
 // import type { NextPage } from "next";
 
-export default function Home(resOfHistory: any) {
+export default function Home(responce: any) {
     const [history, setHistory] = useState<string>('')
     const [skill, setSkill] = useState<string>('')
 
@@ -27,27 +27,11 @@ export default function Home(resOfHistory: any) {
         })
     }
     const showHistory  = () => {
-        if(resOfHistory.resOfHistory[0].His) {
-            return resOfHistory.resOfHistory[0].His
+        if(responce.responce[0].His) {
+            console.log("responce",responce)
+            return responce.responce[0].His
         }
     }
-    // {console.log(resOfHistory.resOfHistory[0].His)}
-//     const plusTextarea = () => { //skillの入力タグ追加用
-//         const skills: HTMLElement | null = document.querySelector<HTMLElement>(".plusSkill")
-//         const pulsTag:HTMLInputElement = document.createElement('input');//<input className='skill' cols={50} rows={10} value={skill} onChange={(e) => setSkill(e.target.value)}></input>
-//         pulsTag.type = "text";
-//         pulsTag.className = "pulsTag"
-//         pulsTag.value = skill;
-//         onchange=(e) => setSkill(e.target.value)}
-//         pulsTag.onmouseover = function(event:MouseEvent) { // ここ
-//         alert(event);
-// }
-//         document.body.appendChild(pulsTag)
-//         console.log("test")
-//         return (
-//             <textarea className='skill' cols={50} rows={10} value={skill} onChange={(e) => setSkill(e.target.value)}></textarea>
-//         )
-//     }
     return (
         <div className='container'>
             <Head>
@@ -83,6 +67,13 @@ export default function Home(resOfHistory: any) {
                         </div>
                         {/* <button className='plusTextarea' onClick={plusTextarea}>入力欄追加</button> */}
                         <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
+                        <br></br>
+                        <div className='skillIcons'>
+                            {responce.iconResonce.map(icon => (
+                                <img src={icon.Icons} alt="typescript" width="40" height="40"/>
+                                // <div>{icon.Icons}</div>
+                            ))}
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -95,17 +86,20 @@ export default function Home(resOfHistory: any) {
 export async function getServerSideProps() {
     const res = await axios.get(`${process.env.API}/getHistories`, {
     });
-    // const iconRes = 
-    const resOfHistory = await res.data;
+    const iconRes = await axios.get(`${process.env.API}/getIcons`, {
+    });
+    const responce = await res.data;
+    const iconResonce = await iconRes.data;
     // {console.log(history)}
     // {console.log(typeof history)}
     // {console.log(typeof history[0])}
     // {console.log(history[0].His)}
     // {console.log(typeof history[0].His)}
+    //{console.log(iconResonce)}
   
     return {
         props: {
-            resOfHistory
+            responce, iconResonce
         },
     };
   }
