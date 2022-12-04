@@ -79,7 +79,7 @@ export default function Home(resOfHistory: any) {
                     <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
                     <div className='myskillsEdit'>
                         <div className='plusSkill'>
-                            <textarea className='skill' cols={50} rows={10} value={skill} onChange={(e) => setSkill(e.target.value)}></textarea>
+                            <input className='skill' size={100} value={skill} onChange={(e) => setSkill(e.target.value)}></input>
                         </div>
                         {/* <button className='plusTextarea' onClick={plusTextarea}>入力欄追加</button> */}
                         <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
