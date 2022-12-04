@@ -4,7 +4,16 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 
-export default function Home(resOfHistory:any) {
+
+export default function Home(responce: any) {
+  const showHistory  = () => {
+    if(responce.responce[0].His) {
+        console.log("responce",responce)
+        return responce.responce[0].His
+    }
+}
+
+
   return (
     <div className={styles.container}>
       <Head>
@@ -21,7 +30,7 @@ export default function Home(resOfHistory:any) {
         </div>
         <div className='myHistory'>
           <h2>経歴</h2>
-          {resOfHistory.resOfHistory[0].His}
+          {showHistory()}
         </div>
         <div className='projects'>
           <h2>作ったもの</h2>
@@ -29,17 +38,9 @@ export default function Home(resOfHistory:any) {
         <div className='skills'>
           <h2>skills</h2>
           <p text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/go/go-original-wordmark.svg" alt="go" width="40" height="40"/> 
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" alt="php" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg" alt="react" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original-wordmark.svg" alt="next.js" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="express" width="40" height="40"/> 
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/firebase/firebase-plain-wordmark.svg" alt="firebase" width="40" height="40"/>
-          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="40" height="40"/>
+            {responce.iconResonce.map(icon => (
+              <img src={icon.Icons} alt="typescript" width="40" height="40"/>
+            ))}
           </p>
         </div>
       </main>
@@ -63,10 +64,14 @@ export default function Home(resOfHistory:any) {
 export async function getServerSideProps() {
   const res = await axios.get(`${process.env.API}/getHistories`, {
   });
-  const resOfHistory = await res.data;
+  const iconRes = await axios.get(`${process.env.API}/getIcons`, {
+  });
+  const responce = await res.data;
+  const iconResonce = await iconRes.data;
+
   return {
       props: {
-          resOfHistory
+          responce, iconResonce
       },
   };
 }
