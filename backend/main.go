@@ -98,6 +98,10 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+type skillicon struct {
+    Id int `json:id`
+    Icons string `json:icon`
+}
 
 func getIconsRows(db *sql.DB) *sql.Rows { 
     rows, err := db.Query("SELECT * FROM skillIcons")
@@ -134,10 +138,6 @@ func getIcons(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-type skillicon struct {
-    Id int `json:id`
-    Icons string `json:icon`
-}
 func postIcons(w http.ResponseWriter, r *http.Request) {
     db :=connectionDB()//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
     defer db.Close()
@@ -177,5 +177,6 @@ func main() {
     http.HandleFunc("/postMyhis", postMyhis)
     http.HandleFunc("/getHistories", getHistories)
     http.HandleFunc("/postIcons", postIcons)
+    http.HandleFunc("/getIcons", getIcons)
     http.ListenAndServe(":8080", nil)
 }
