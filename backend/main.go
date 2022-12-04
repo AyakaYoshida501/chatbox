@@ -98,6 +98,41 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func getIconsRows(db *sql.DB) *sql.Rows { 
+    rows, err := db.Query("SELECT * FROM skillIcons")
+    if err != nil {
+        log.Println("get skillIcons error!", err)    
+    }
+    return rows
+}
+
+func getIcons(w http.ResponseWriter, r *http.Request) {
+    db := connectionDB()
+    defer db.Close()
+    rows :=  getIconsRows(db) // 行データ取得
+    icon := Icon{}//
+    var resultIcon [] Icon
+    for rows.Next() {
+        error := rows.Scan(&icon.Id, &icon.Icons)//
+        if error != nil {
+            log.Println("scan error", error)
+        } else {
+            resultIcon = append(resultIcon, icon)
+        }
+    }
+    var buf bytes.Buffer 
+    enc := json.NewEncoder(&buf) 
+    if err := enc.Encode(&resulthistory); err != nil {
+        log.Fatal(err)
+    }
+    log.Printf(buf.String())
+
+    _, err := fmt.Fprint(w, buf.String()) 
+    if err != nil {
+        return
+    }
+}
+
 type skillicon struct {
     Id int `json:id`
     Icons string `json:icon`
@@ -123,6 +158,7 @@ func postIcons(w http.ResponseWriter, r *http.Request) {
         log.Println("insert error!", err)//sql: database is closed
     }
 }
+
 
 
 func main() {
