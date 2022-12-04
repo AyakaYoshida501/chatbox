@@ -98,7 +98,7 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-type skillicon struct {
+type Icon struct {
     Id int `json:id`
     Icons string `json:icon`
 }
@@ -127,7 +127,7 @@ func getIcons(w http.ResponseWriter, r *http.Request) {
     }
     var buf bytes.Buffer 
     enc := json.NewEncoder(&buf) 
-    if err := enc.Encode(&resulthistory); err != nil {
+    if err := enc.Encode(&resultIcon); err != nil {
         log.Fatal(err)
     }
     log.Printf(buf.String())
@@ -148,7 +148,7 @@ func postIcons(w http.ResponseWriter, r *http.Request) {
     }
 
     jsonBytes := ([]byte)(b)
-    data := new(skillicon)
+    data := new(Icon)
     if err := json.Unmarshal(jsonBytes, data); err != nil {
         log.Println("JSON Unmarshal error:", err)
         return
