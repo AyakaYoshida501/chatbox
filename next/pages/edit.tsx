@@ -4,7 +4,25 @@ import { useState } from 'react'
 import { Axios } from "../lib/api";
 // import type { NextPage } from "next";
 
-export default function Home(responce: any) {
+// interface iconObj {
+//     [key: string]: Array<{ Id?: number; Icons?: string }>
+// }
+
+interface responceObj {
+    responce?: history[];
+    iconResonce?: icon[];
+}
+
+interface history {
+    Id: number;
+    His: string
+}
+interface icon {
+    Id: number;
+    Icons: string
+}
+
+export default function Home(responce: responceObj) {
     const [history, setHistory] = useState<string>('')
     const [skill, setSkill] = useState<string>('')
 
@@ -34,14 +52,14 @@ export default function Home(responce: any) {
     }
     const showIcons = () => {
         if(responce.iconResonce) {
-            responce.iconResonce.map(icon => (
-                <div>
+            console.log(responce.iconResonce)
+            return responce.iconResonce.map((icon: icon, i:number) => (
+                <div key={i}>
                 <img src={icon.Icons} alt="typescript" width="40" height="40"/>
-                <div>{icon.Icons}</div>
                 </div>
             ))} 
         }
-
+        console.log(responce)
     return (
         <div className='container'>
             <Head>
@@ -75,7 +93,6 @@ export default function Home(responce: any) {
                         <div className='plusSkill'>
                             <input className='skill' size={100} value={skill} onChange={(e) => setSkill(e.target.value)}></input>
                         </div>
-                        {/* <button className='plusTextarea' onClick={plusTextarea}>入力欄追加</button> */}
                         <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
                         <br></br>
                         <div className='skillIcons'>
@@ -97,13 +114,6 @@ export async function getServerSideProps() {
     });
     const responce = await res.data;
     const iconResonce = await iconRes.data;
-    // {console.log(history)}
-    // {console.log(typeof history)}
-    // {console.log(typeof history[0])}
-    // {console.log(history[0].His)}
-    // {console.log(typeof history[0].His)}
-    //{console.log(iconResonce)}
-  
     return {
         props: {
             responce, iconResonce
