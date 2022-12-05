@@ -3,9 +3,22 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
+interface responceObj {
+  responce?: history[];
+  iconResonce?: icon[];
+}
+
+interface history {
+  Id: number;
+  His: string
+}
+interface icon {
+  Id: number;
+  Icons: string
+}
 
 
-export default function Home(responce: any) {
+export default function Home(responce: responceObj) {
   const showHistory  = () => {
     if(responce.responce) {
         console.log("responce",responce)
@@ -14,10 +27,10 @@ export default function Home(responce: any) {
 }
 const showIcons = () => {
   if(responce.iconResonce) {
-      responce.iconResonce.map(icon => (
-          <div>
+      console.log(responce.iconResonce)
+      return responce.iconResonce.map((icon: icon, i:number) => (
+          <div key={i}>
           <img src={icon.Icons} alt="typescript" width="40" height="40"/>
-          <div>{icon.Icons}</div>
           </div>
       ))} 
   }
@@ -47,9 +60,7 @@ const showIcons = () => {
         </div>
         <div className='skills'>
           <h2>skills</h2>
-          <p text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
           {showIcons()}
-          </p>
         </div>
       </main>
 
