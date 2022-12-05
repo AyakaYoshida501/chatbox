@@ -27,11 +27,21 @@ export default function Home(responce: any) {
         })
     }
     const showHistory  = () => {
-        if(responce.responce[0].His) {
+        if(responce.responce) {
             console.log("responce",responce)
             return responce.responce[0].His
         }
     }
+    const showIcons = () => {
+        if(responce.iconResonce) {
+            responce.iconResonce.map(icon => (
+                <div>
+                <img src={icon.Icons} alt="typescript" width="40" height="40"/>
+                <div>{icon.Icons}</div>
+                </div>
+            ))} 
+        }
+
     return (
         <div className='container'>
             <Head>
@@ -69,10 +79,7 @@ export default function Home(responce: any) {
                         <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
                         <br></br>
                         <div className='skillIcons'>
-                            {responce.iconResonce.map(icon => (
-                                <img src={icon.Icons} alt="typescript" width="40" height="40"/>
-                                // <div>{icon.Icons}</div>
-                            ))}
+                            {showIcons()}
                         </div>
                     </div>
                     </div>
