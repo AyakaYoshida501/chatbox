@@ -7,11 +7,21 @@ import styles from '../styles/Home.module.css'
 
 export default function Home(responce: any) {
   const showHistory  = () => {
-    if(responce.responce[0].His) {
+    if(responce.responce) {
         console.log("responce",responce)
         return responce.responce[0].His
     }
 }
+const showIcons = () => {
+  if(responce.iconResonce) {
+      responce.iconResonce.map(icon => (
+          <div>
+          <img src={icon.Icons} alt="typescript" width="40" height="40"/>
+          <div>{icon.Icons}</div>
+          </div>
+      ))} 
+  }
+
 
 
   return (
@@ -38,9 +48,7 @@ export default function Home(responce: any) {
         <div className='skills'>
           <h2>skills</h2>
           <p text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
-            {responce.iconResonce.map(icon => (
-              <img src={icon.Icons} alt="typescript" width="40" height="40"/>
-            ))}
+          {showIcons()}
           </p>
         </div>
       </main>
