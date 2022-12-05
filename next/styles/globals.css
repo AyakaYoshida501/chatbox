@@ -22,6 +22,9 @@ a {
 .skills img {
   margin-right: 5px;
 }
+.icons {
+  display: inline-block;
+}
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

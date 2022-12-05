@@ -29,8 +29,8 @@ const showIcons = () => {
   if(responce.iconResonce) {
       console.log(responce.iconResonce)
       return responce.iconResonce.map((icon: icon, i:number) => (
-          <div key={i}>
-          <img src={icon.Icons} alt="typescript" width="40" height="40"/>
+          <div key={i} className='icons'>
+          <img src={icon.Icons} alt="typescript" width="40" height="40" />
           </div>
       ))} 
   }
@@ -46,7 +46,7 @@ const showIcons = () => {
       </Head>
 
       <main className='styleMain'>
-        <h1>my portfolio</h1>
+        <h1>My Portfolio</h1>
         <div className='introduceMe'>
         <img src="/mypic.JPG" alt="mypic" width={200} height={200} />  {/* 変更可能にする */}
           <p>名前：よしだあやか</p>
