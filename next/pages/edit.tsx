@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { useState } from 'react'
 import { Axios } from "../lib/api";
 // import type { NextPage } from "next";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 // interface iconObj {
 //     [key: string]: Array<{ Id?: number; Icons?: string }>
@@ -25,6 +26,10 @@ interface icon {
 export default function Home(responce: responceObj) {
     const [history, setHistory] = useState<string>('')
     const [skill, setSkill] = useState<string>('')
+    //const [session, loading] = useSession();
+    const { data: loading }  = useSession(); //todo
+    const { data: session }  = useSession(); //todo
+    
 
     const postHistory = () =>{ 
         const data = {
@@ -54,13 +59,28 @@ export default function Home(responce: responceObj) {
         if(responce.iconResonce) {
             console.log(responce.iconResonce)
             return responce.iconResonce.map((icon: icon, i:number) => (
-                <div key={i}>
+                <div key={i} className='icons'>
                 <img src={icon.Icons} alt="typescript" width="40" height="40"/>
                 </div>
             ))} 
         }
         console.log(responce)
     return (
+        <>
+          {!session && (
+        <>
+          {loading ? (
+            <>Loading ...</>
+          ) : (
+            <>
+              Not signed in <br />
+              <button onClick={() => signIn()}>Sign in</button>
+            </>
+          )}
+        </>
+      )}
+      {session && (
+        <>
         <div className='container'>
             <Head>
             <title>MyPortfolio edit page</title>
@@ -101,9 +121,12 @@ export default function Home(responce: responceObj) {
                     </div>
                     </div>
                 </div>
+                <button onClick={() => signOut()}>Sign out</button> 
             </main>
         </div>
-
+        </>
+        )}
+    </>
     )
 }
 
