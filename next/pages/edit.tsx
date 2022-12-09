@@ -2,12 +2,8 @@ import axios from 'axios'
 import Head from 'next/head'
 import { useState } from 'react'
 import { Axios } from "../lib/api";
-// import type { NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-// interface iconObj {
-//     [key: string]: Array<{ Id?: number; Icons?: string }>
-// }
 
 interface responceObj {
     responce?: history[];
@@ -36,35 +32,32 @@ export default function Home(responce: responceObj) {
             "His": history 
         }
         Axios.post(`api/proxy/postMyhis`, data)
-        .then(res => {
-            console.log(res);
-        })
+        // .then(res => {
+        //     console.log(res);
+        // })
     }
     const postSkill = () =>{ 
         const data = {
             "Icons": skill 
         }
         Axios.post(`api/proxy/postIcons`, data)
-        .then(res => {
-            console.log(res);
-        })
+        // .then(res => {
+        //     console.log(res);
+        // })
     }
     const showHistory  = () => {
         if(responce.responce) {
-            console.log("responce",responce)
             return responce.responce[0].His
         }
     }
     const showIcons = () => {
         if(responce.iconResonce) {
-            console.log(responce.iconResonce)
             return responce.iconResonce.map((icon: icon, i:number) => (
                 <div key={i} className='icons'>
                 <img src={icon.Icons} alt="typescript" width="40" height="40"/>
                 </div>
             ))} 
         }
-        console.log(responce)
     return (
         <>
           {!session && (
@@ -109,16 +102,14 @@ export default function Home(responce: responceObj) {
                 <div className='skills'>
                     <h2>skills</h2>
                     <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
-                    <div className='myskillsEdit'>
-                        <div className='plusSkill'>
-                            <input className='skill' size={100} value={skill} onChange={(e) => setSkill(e.target.value)}></input>
-                        </div>
-                        <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
-                        <br></br>
-                        <div className='skillIcons'>
+                        <div className='myskillsEdit'>
+                            <div className='plusSkill'>
+                                <input className='skill' size={100} value={skill} onChange={(e) => setSkill(e.target.value)}></input>
+                            </div>
+                            <button className='postHSkillBtn' onClick={postSkill}>送信する</button>
+                            <br></br>
                             {showIcons()}
                         </div>
-                    </div>
                     </div>
                 </div>
                 <button onClick={() => signOut()}>Sign out</button> 
