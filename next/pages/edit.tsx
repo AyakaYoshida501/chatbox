@@ -74,6 +74,8 @@ export default function Home(responce: responceObj) {
       )}
       {session && (
         <>
+        {console.log("session",session)}
+        {console.log("loading",loading)}
         <div className='container'>
             <Head>
             <title>MyPortfolio edit page</title>
@@ -82,7 +84,8 @@ export default function Home(responce: responceObj) {
             <main className='mainContainer'>
             <h1>my portfolio</h1>
                 <div className='introduceMe'>
-                    <img src="/mypic.JPG" alt="mypic" width={200} height={200} />  {/* 変更可能にする S3*/}
+                    <img src={session.user?.image} alt="mypic" width={200} height={200} /> <br></br>
+                    <h3>{session.user?.name}</h3>
                 </div>
                 <div className='myHistory'>
                     <h2>経歴</h2>
