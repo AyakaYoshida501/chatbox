@@ -8,9 +8,15 @@ import (
     "io/ioutil"
     "encoding/json"
     "bytes"
+    "strings"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
+
+    "github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+
     _ "github.com/go-sql-driver/mysql"
 )
 
@@ -27,7 +33,7 @@ func envLoad() {
 
 func connectionDB() *sql.DB {
     dsn := fmt.Sprintf("%s:%s@%s(%s:%s)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PROTOCOL"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB"))
-    log.Println(dsn)
+    //log.Println(dsn)
     db, err := sql.Open("mysql", dsn)
     if err != nil {
         log.Println("Err1")
@@ -90,7 +96,7 @@ func getHistories(w http.ResponseWriter, r *http.Request) {
     if err := enc.Encode(&resulthistory); err != nil {
         log.Fatal(err)
     }
-    log.Printf(buf.String())
+    //log.Printf(buf.String())
 
     _, err := fmt.Fprint(w, buf.String()) 
     if err != nil {
@@ -130,7 +136,7 @@ func getIcons(w http.ResponseWriter, r *http.Request) {
     if err := enc.Encode(&resultIcon); err != nil {
         log.Fatal(err)
     }
-    log.Printf(buf.String())
+    //log.Printf(buf.String())
 
     _, err := fmt.Fprint(w, buf.String()) 
     if err != nil {
@@ -160,7 +166,47 @@ func postIcons(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+type pic struct {
+    Id int `json:id`
+    Picture string `json:picture`
+}
+func uploadS3(w http.ResponseWriter, r *http.Request) {
+    sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:  aws.Config{Region: aws.String("ap-northeast-3")},
+        //SharedConfigState: session.SharedConfigEnable,
+		Profile: "default",
+	}))    
 
+    uploader := s3manager.NewUploader(sess)
+
+    b, err := ioutil.ReadAll(r.Body)//todo 
+    if err != nil {
+        log.Println("io error")
+        return
+    }
+
+    jsonBytes := ([]byte)(b)
+    data := new(pic)
+    if err := json.Unmarshal(jsonBytes, data); err != nil {
+        log.Println("JSON Unmarshal error:", err)
+        return
+    }
+
+    upData := strings.NewReader(data.Picture)
+    // Upload the file to S3.
+    myBucket :=os.Getenv("Bucket_name")
+    result, err := uploader.Upload(&s3manager.UploadInput{
+        Bucket: aws.String(myBucket), 
+        Key:    aws.String("path/to/file"),
+        Body:   upData,
+    })
+    if err != nil {
+        log.Fatal("failed to upload file, %v", err)
+        //return fmt.Errorf("failed to upload file, %v\n", err)
+    }
+    log.Println("アップロード関数通過");
+    fmt.Printf("file uploaded to, %s\n", aws.String(result.Location))
+    }
 
 
 func main() {
@@ -178,5 +224,6 @@ func main() {
     http.HandleFunc("/getHistories", getHistories)
     http.HandleFunc("/postIcons", postIcons)
     http.HandleFunc("/getIcons", getIcons)
+    http.HandleFunc("/uploadS3", uploadS3)
     http.ListenAndServe(":8080", nil)
 }
