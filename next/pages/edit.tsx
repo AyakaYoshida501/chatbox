@@ -22,6 +22,7 @@ interface icon {
 export default function Home(responce: responceObj) {
     const [history, setHistory] = useState<string>('')
     const [skill, setSkill] = useState<string>('')
+    const [picture, setPicture] = useState<string>('')
     //const [session, loading] = useSession();
     const { data: loading }  = useSession(); //todo
     const { data: session }  = useSession(); //todo
@@ -45,6 +46,16 @@ export default function Home(responce: responceObj) {
         //     console.log(res);
         // })
     }
+    const postPicture = () =>{ 
+        const data = {
+            "Picture": picture
+        }
+        Axios.post(`api/proxy/uploadS3`, data)
+        // .then(res => {
+        //     console.log(res);
+        // })
+    }
+
     const showHistory  = () => {
         if(responce.responce) {
             return responce.responce[0].His
@@ -96,11 +107,13 @@ export default function Home(responce: responceObj) {
                 </div>
                 <div className='projects'>
                     <h2>作ったもの</h2>
-                    <form method="post" encType="multipart/form-data">
-                        <input type="file" name="sakuhin" accept='image/*' multiple/>
+                    <form method="post" encType="multipart/form-data" onSubmit={postPicture}>
+                        <input type="file" name="sakuhin" accept='image/*' multiple value={picture} onChange={(e) => setPicture(e.target.value)}/>
                         <button type="submit">送信する</button>
                     </form>
                 </div>
+                        {console.log(picture)}
+                        {console.log(typeof picture)}
                 <div className='skills'>
                     <h2>skills</h2>
                     <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
