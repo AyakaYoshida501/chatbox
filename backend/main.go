@@ -171,7 +171,12 @@ type pic struct {
     Picture string `json:picture`
 }
 func uploadS3(w http.ResponseWriter, r *http.Request) {
-    sess := session.Must(session.NewSession())
+    sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:  aws.Config{Region: aws.String("ap-northeast-3")},
+        //SharedConfigState: session.SharedConfigEnable,
+		Profile: "default",
+	}))    
+
     uploader := s3manager.NewUploader(sess)
 
     b, err := ioutil.ReadAll(r.Body)//todo 
@@ -199,6 +204,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
         log.Fatal("failed to upload file, %v", err)
         //return fmt.Errorf("failed to upload file, %v\n", err)
     }
+    log.Println("アップロード関数通過");
     fmt.Printf("file uploaded to, %s\n", aws.String(result.Location))
     }
 
@@ -218,5 +224,6 @@ func main() {
     http.HandleFunc("/getHistories", getHistories)
     http.HandleFunc("/postIcons", postIcons)
     http.HandleFunc("/getIcons", getIcons)
+    http.HandleFunc("/uploadS3", uploadS3)
     http.ListenAndServe(":8080", nil)
 }
