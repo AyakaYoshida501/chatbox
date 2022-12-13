@@ -9,6 +9,7 @@ import (
     "encoding/json"
     "bytes"
     "strings"
+    // "html"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -58,7 +59,7 @@ func postMyhis(w http.ResponseWriter, r *http.Request) {
 
     jsonBytes := ([]byte)(b)
     data := new(History)
-    if err := json.Unmarshal(jsonBytes, data); err != nil {
+    if err := json.Unmarshal(jsonBytes, data); err != nil { // dataにバイト列を格納
         log.Println("JSON Unmarshal error:", err)
         return
     }
@@ -145,16 +146,22 @@ func getIcons(w http.ResponseWriter, r *http.Request) {
 }
 
 func postIcons(w http.ResponseWriter, r *http.Request) {
-    db :=connectionDB()//connectionDB実行するときに出来る変数 db を利用した関数内でも使えるのか？？エラーでるかも
+    db :=connectionDB()
     defer db.Close()
-    b, err := ioutil.ReadAll(r.Body)
+    log.Println("r.Body:",r.Body)
+    // req := html.EscapeString(r.Body)
+    // log.Println("req:",req)
+    b, err := ioutil.ReadAll(r.Body)//b, err := ioutil.ReadAll(req)
+    log.Println("b:",b)
     if err != nil {
         log.Println("io error")
         return
     }
 
     jsonBytes := ([]byte)(b)
+    log.Println("jsonBytes:",jsonBytes)
     data := new(Icon)
+    log.Println("data:",data)
     if err := json.Unmarshal(jsonBytes, data); err != nil {
         log.Println("JSON Unmarshal error:", err)
         return
@@ -171,11 +178,31 @@ type pic struct {
     Picture string `json:picture`
 }
 func uploadS3(w http.ResponseWriter, r *http.Request) {
-    sess := session.Must(session.NewSessionWithOptions(session.Options{
-		Config:  aws.Config{Region: aws.String("ap-northeast-3")},
-        //SharedConfigState: session.SharedConfigEnable,
-		Profile: "default",
-	}))    
+    // sess := session.Must(session.NewSession(&aws.Config{
+    //     Region: aws.String("ap-northeast-3")},))
+    // sess, err := session.NewSession(&aws.Config{
+    //     Region: aws.String("ap-northeast-3")},
+    // )
+    // if err != nil {
+    //     log.Fatal("failed to make session, %v", err)
+    //     //return fmt.Errorf("failed to upload file, %v\n", err)
+    // }
+    // sess := session.Must(session.NewSessionWithOptions(session.Options{
+    //     SharedConfigState: session.SharedConfigEnable,
+    // })) //%vMissingRegion: could not find region configuration
+        sess := session.Must(session.NewSessionWithOptions(session.Options{
+        SharedConfigState: session.SharedConfigEnable,
+        Config: aws.Config{
+            Region: aws.String("p-northeast-3"),
+        },
+    })) //%vMissingRegion: could not find region configuration
+
+
+    // sess := session.Must(session.NewSessionWithOptions(session.Options{
+	// 	Config:  aws.Config{Region: aws.String("ap-northeast-3")},
+    //     SharedConfigState: session.SharedConfigEnable,
+	// 	Profile: "default",
+	// }))    
 
     uploader := s3manager.NewUploader(sess)
 
@@ -191,8 +218,8 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
         log.Println("JSON Unmarshal error:", err)
         return
     }
-
     upData := strings.NewReader(data.Picture)
+    log.Println(upData)
     // Upload the file to S3.
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
@@ -204,9 +231,13 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
         log.Fatal("failed to upload file, %v", err)
         //return fmt.Errorf("failed to upload file, %v\n", err)
     }
-    log.Println("アップロード関数通過");
+    fmt.Println("アップロード関数通過")
     fmt.Printf("file uploaded to, %s\n", aws.String(result.Location))
     }
+
+    // func uploadS3(w http.ResponseWriter, r *http.Request){
+    //     fmt.Println("アップロード関数通過")
+    // }
 
 
 func main() {
