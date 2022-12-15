@@ -178,8 +178,8 @@ type pic struct {
     Picture string `json:picture`
 }
 func uploadS3(w http.ResponseWriter, r *http.Request) {
-    // sess := session.Must(session.NewSession(&aws.Config{
-    //     Region: aws.String("ap-northeast-3")},))
+    sess := session.Must(session.NewSession(&aws.Config{
+        Region: aws.String("ap-northeast-3")},))
     // sess, err := session.NewSession(&aws.Config{
     //     Region: aws.String("ap-northeast-3")},
     // )
@@ -187,15 +187,13 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     //     log.Fatal("failed to make session, %v", err)
     //     //return fmt.Errorf("failed to upload file, %v\n", err)
     // }
-    // sess := session.Must(session.NewSessionWithOptions(session.Options{
+
+    //     sess := session.Must(session.NewSessionWithOptions(session.Options{
     //     SharedConfigState: session.SharedConfigEnable,
-    // })) //%vMissingRegion: could not find region configuration
-        sess := session.Must(session.NewSessionWithOptions(session.Options{
-        SharedConfigState: session.SharedConfigEnable,
-        Config: aws.Config{
-            Region: aws.String("p-northeast-3"),
-        },
-    })) //%vMissingRegion: could not find region configuration
+    //     Config: aws.Config{
+    //         Region: aws.String("ap-northeast-3"),
+    //     },
+    // })) //%vNoCredentialProviders: no valid providers in chain.
 
 
     // sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -203,6 +201,11 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     //     SharedConfigState: session.SharedConfigEnable,
 	// 	Profile: "default",
 	// }))    
+
+    // sess := session.Must(session.NewSession(&aws.Config{
+    //     Region:      aws.String("ap-northeast-3"),
+    //     Credentials: credentials.NewSharedCredentials("", "profile"),
+    // }))
 
     uploader := s3manager.NewUploader(sess)
 
@@ -224,7 +227,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
-        Key:    aws.String("path/to/file"),
+        Key:    aws.String("file"),
         Body:   upData,
     })
     if err != nil {
@@ -233,11 +236,8 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     }
     fmt.Println("アップロード関数通過")
     fmt.Printf("file uploaded to, %s\n", aws.String(result.Location))
+    fmt.Printf("file uploaded to, %T\n", aws.String(result.Location))
     }
-
-    // func uploadS3(w http.ResponseWriter, r *http.Request){
-    //     fmt.Println("アップロード関数通過")
-    // }
 
 
 func main() {
