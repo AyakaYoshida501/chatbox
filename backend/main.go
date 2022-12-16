@@ -10,6 +10,7 @@ import (
     "bytes"
     "strings"
     // "html"
+    // "image"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -19,6 +20,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
     _ "github.com/go-sql-driver/mysql"
+    _ "image/gif"
+	_ "image/png"
+	_ "image/jpeg"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -177,6 +181,28 @@ type pic struct {
     Id int `json:id`
     Picture string `json:picture`
 }
+// func LoadImage(path string) GoImg { //写真の読み込み関数
+// 	file, _ := os.Open(path)
+// 	defer file.Close()
+
+// 	src, _, err := image.Decode(file)//ファイル読み込んでる
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	size := src.Bounds().Size()
+// 	width, height := size.X, size.Y
+
+// 	img := GoImg{
+// 		Image:  src,
+// 		Path:   path,
+// 		Height: height,
+// 		Width:  width,
+// 	}
+
+// 	return img
+// }
+
 func uploadS3(w http.ResponseWriter, r *http.Request) {
     sess := session.Must(session.NewSession(&aws.Config{
         Region: aws.String("ap-northeast-3")},))
@@ -206,7 +232,6 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     //     Region:      aws.String("ap-northeast-3"),
     //     Credentials: credentials.NewSharedCredentials("", "profile"),
     // }))
-
     uploader := s3manager.NewUploader(sess)
 
     b, err := ioutil.ReadAll(r.Body)//todo 
@@ -221,14 +246,19 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
         log.Println("JSON Unmarshal error:", err)
         return
     }
-    upData := strings.NewReader(data.Picture)
+    upData := strings.NewReader(data.Picture)//文字列として読み込んてるから画像が表示されない
+    // img := LoadImage(upData) //写真の読み込み実装
+    //file, _ := os.Open(upData)
+    file, _ := os.Open(data.Picture)
+    defer file.Close()
+
     log.Println(upData)
     // Upload the file to S3.
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
         Key:    aws.String("file"),
-        Body:   upData,
+        Body:   file,
     })
     if err != nil {
         log.Fatal("failed to upload file, %v", err)

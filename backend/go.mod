@@ -9,4 +9,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 )
 
-require github.com/jmespath/go-jmespath v0.4.0 // indirect
+require (
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	golang.org/x/image v0.2.0 // indirect
+)
