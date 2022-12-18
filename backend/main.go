@@ -8,7 +8,7 @@ import (
     "io/ioutil"
     "encoding/json"
     "bytes"
-    "strings"
+    // "strings"
     // "html"
     // "image"
 
@@ -215,7 +215,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     // }
 
     //     sess := session.Must(session.NewSessionWithOptions(session.Options{
-    //     SharedConfigState: session.SharedConfigEnable,
+    //     SharedConfigState: session.SharedConfigEnable, //オプションの「SharedConfigState」に「SharedConfigEnable」を設定することで、設定している ~/.aws/config内を参照してくれる
     //     Config: aws.Config{
     //         Region: aws.String("ap-northeast-3"),
     //     },
@@ -246,18 +246,18 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
         log.Println("JSON Unmarshal error:", err)
         return
     }
-    upData := strings.NewReader(data.Picture)//文字列として読み込んてるから画像が表示されない
+    // upData := strings.NewReader(data.Picture)//文字列として読み込んてるから画像が表示されない
     // img := LoadImage(upData) //写真の読み込み実装
-    //file, _ := os.Open(upData)
-    file, _ := os.Open(data.Picture)
+    // file, _ := os.Open(upData)
+    file, _ := os.Open(data.Picture) //%vReadRequestBody: unable to initialize upload
+    log.Println("data.Picture", data.Picture)
     defer file.Close()
 
-    log.Println(upData)
     // Upload the file to S3.
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
-        Key:    aws.String("file"),
+        Key:    aws.String("file"), //key名の設定方法
         Body:   file,
     })
     if err != nil {
