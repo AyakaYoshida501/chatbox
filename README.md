@@ -9,6 +9,7 @@ migrate -source file://db/migrations -database "mysqlのURL" up
 ```
 ## 要 backendコンテナ内でのAWS CLIのインストール
 credential情報が登録されているかの確認
+コンテナに入り👇
 ```bash
 aws configure list
 ```
