@@ -8,9 +8,10 @@ import (
     "io/ioutil"
     "encoding/json"
     "bytes"
-    // "strings"
+    "strings"
     // "html"
     // "image"
+    // "regexp"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -242,23 +243,66 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
 
     jsonBytes := ([]byte)(b)
     data := new(pic)
+    // data := &pic{}
     if err := json.Unmarshal(jsonBytes, data); err != nil {
         log.Println("JSON Unmarshal error:", err)
         return
     }
+    //フォームで読み取る画像ファイルの方→　multipart.File
+    // file, _, err := r.FormFile("image")
     // upData := strings.NewReader(data.Picture)//文字列として読み込んてるから画像が表示されない
-    // img := LoadImage(upData) //写真の読み込み実装
-    // file, _ := os.Open(upData)
-    file, _ := os.Open(data.Picture) //%vReadRequestBody: unable to initialize upload
-    log.Println("data.Picture", data.Picture)
-    defer file.Close()
+
+    // if _, err := os.Stat(&data.Picture); err == nil {
+	// 	fmt.Println("存在します")
+	// } else {
+	// 	panic("Couldn't stat image: " + err.Error())
+	// }
+    // file, _ := os.Open(data.Picture)
+    // // log.Println("file:", file)
+    // // file, _ := os.Open(data.Picture) //%vReadRequestBody: unable to initialize upload
+    // // log.Println("data.Picture:", data.Picture)
+    // // log.Println("os.Open(data.Picture):", os.Open(data.Picture))
+    // defer file.Close()
+
+
+    // reg := regexp.MustCompile(`([^\\]*jpeg)$`)
+    // // upPic := reg.ReplaceAllString(data.Picture, "")
+    // uppic := reg.FindString(data.Picture)
+    // //upPic := strings.Replace(data.Picture, "C:/fakepath/", "", 1) // [Cから始まって最後の/] までが理想
+    // log.Println("upPic:", upPic)
+
+	// if _, err := os.Stat(upPic); err == nil {
+	// 	fmt.Println("存在します")
+	// } else {
+	// 	panic("Couldn't stat image: " + err.Error())
+	// }
+    // file, _ := os.Open(upPic)
+    // defer file.Close()
+    
+    //写真が上がるかチェック
+    // var uppic = "./mypic.JPG" //uppic := "../next/public/mypic.JPG"
+    // if _, err := os.Stat(*uppic); err == nil {
+	// 	fmt.Println("have a file")
+	// } else {
+	// 	panic("Couldn't stat image: " + err.Error())
+	// }
+    // file, _ := os.Open(*uppic) //failed to upload file, %vReadRequestBody: unable to initialize upload caused by: invalid argument
+    // log.Println("file:", file)
+    // defer file.Close()
+    var uppic *string 
+    uppic = &data.Picture // *string型が格納
+    log.Println("uppic:", uppic)
+    // file, _ := os.Open(*uppic) 
+    // log.Println("file:", file)
+    // defer file.Close()
 
     // Upload the file to S3.
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
-        Key:    aws.String("file"), //key名の設定方法
-        Body:   file,
+        Key:    aws.String("file.jpeg"), //key名の設定方法
+        Body:   strings.NewReader(*uppic),//file, 変えたらダウンロードしなくなった！画像になった！
+        ContentType:   aws.String("image/jpeg"),
     })
     if err != nil {
         log.Fatal("failed to upload file, %v", err)
