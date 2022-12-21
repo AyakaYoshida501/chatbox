@@ -301,7 +301,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
         Key:    aws.String("file.jpeg"), //key名の設定方法
-        Body:   strings.NewReader(*uppic),//file, 変えたらダウンロードしなくなった！画像になった！
+        Body:   strings.NewReader(*uppic),//file, 変えたらダウンロードしなくなった！画像になった！ ⇦サイズが合わない＆画像見れないのはファイルを読み込んでないから？？
         ContentType:   aws.String("image/jpeg"),
     })
     if err != nil {
