@@ -265,9 +265,9 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     // defer file.Close()
 
 
-    // reg := regexp.MustCompile(`([^\\]*jpeg)$`)
+    reg := regexp.MustCompile(`([^\\]*jpeg)$`)
     // // upPic := reg.ReplaceAllString(data.Picture, "")
-    // uppic := reg.FindString(data.Picture)
+    picName := reg.FindString(data.Picture)
     // //upPic := strings.Replace(data.Picture, "C:/fakepath/", "", 1) // [Cから始まって最後の/] までが理想
     // log.Println("upPic:", upPic)
 
@@ -300,7 +300,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
-        Key:    aws.String("file.jpeg"), //key名の設定方法
+        Key:    aws.String(picName), 
         Body:   strings.NewReader(*uppic),//file, 変えたらダウンロードしなくなった！画像になった！ ⇦サイズが合わない＆画像見れないのはファイルを読み込んでないから？？
         ContentType:   aws.String("image/jpeg"),
     })
