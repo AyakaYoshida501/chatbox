@@ -8,10 +8,11 @@ import (
     "io/ioutil"
     "encoding/json"
     "bytes"
-    "strings"
+    // "strings"
     // "html"
     // "image"
     // "regexp"
+    "io"
 
     "github.com/joho/godotenv"
     "github.com/comail/colog"
@@ -182,27 +183,6 @@ type pic struct {
     Id int `json:id`
     Picture string `json:picture`
 }
-// func LoadImage(path string) GoImg { //写真の読み込み関数
-// 	file, _ := os.Open(path)
-// 	defer file.Close()
-
-// 	src, _, err := image.Decode(file)//ファイル読み込んでる
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	size := src.Bounds().Size()
-// 	width, height := size.X, size.Y
-
-// 	img := GoImg{
-// 		Image:  src,
-// 		Path:   path,
-// 		Height: height,
-// 		Width:  width,
-// 	}
-
-// 	return img
-// }
 
 func uploadS3(w http.ResponseWriter, r *http.Request) {
     sess := session.Must(session.NewSession(&aws.Config{
@@ -235,41 +215,44 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     // }))
     uploader := s3manager.NewUploader(sess)
 
-    b, err := ioutil.ReadAll(r.Body)//todo 
-    if err != nil {
-        log.Println("io error")
-        return
-    }
+    //dbにアップロードする用の式
+    // b, err := ioutil.ReadAll(r.Body)//todo 
+    // if err != nil {
+    //     log.Println("io error")
+    //     return
+    // }
 
-    jsonBytes := ([]byte)(b)
-    data := new(pic)
-    // data := &pic{}
-    if err := json.Unmarshal(jsonBytes, data); err != nil {
-        log.Println("JSON Unmarshal error:", err)
-        return
-    }
+    // jsonBytes := ([]byte)(b)
+    // data := new(pic)
+    // // data := &pic{}
+    // if err := json.Unmarshal(jsonBytes, data); err != nil {
+    //     log.Println("JSON Unmarshal error:", err)
+    //     return
+    // }
+    // var uppic *string 
+    // uppic = &data.Picture // *string型が格納
+    // log.Println("uppic:", uppic)
+
+
+
     //フォームで読み取る画像ファイルの方→　multipart.File
     // file, _, err := r.FormFile("image")
     // upData := strings.NewReader(data.Picture)//文字列として読み込んてるから画像が表示されない
 
-    // if _, err := os.Stat(&data.Picture); err == nil {
-	// 	fmt.Println("存在します")
-	// } else {
-	// 	panic("Couldn't stat image: " + err.Error())
-	// }
-    // file, _ := os.Open(data.Picture)
-    // // log.Println("file:", file)
-    // // file, _ := os.Open(data.Picture) //%vReadRequestBody: unable to initialize upload
-    // // log.Println("data.Picture:", data.Picture)
-    // // log.Println("os.Open(data.Picture):", os.Open(data.Picture))
-    // defer file.Close()
+    // fileA, _ := os.Open(data.Picture)
+    // log.Println("file:", file)
+    // file, _ := os.Open(data.Picture) //%vReadRequestBody: unable to initialize upload
+    // log.Println("data.Picture:", data.Picture)
+    // log.Println("os.Open(data.Picture):", os.Open(data.Picture))
+    // defer fileA.Close()
 
+    // //ファイル名をローカルと同じに
+    // reg := regexp.MustCompile(`([^\\]*jpeg)$`)
+    // // // upPic := reg.ReplaceAllString(data.Picture, "")
+    // picName := reg.FindString(data.Picture)
+    // // //upPic := strings.Replace(data.Picture, "C:/fakepath/", "", 1) // [Cから始まって最後の/] までが理想
+    // // log.Println("upPic:", upPic)
 
-    reg := regexp.MustCompile(`([^\\]*jpeg)$`)
-    // // upPic := reg.ReplaceAllString(data.Picture, "")
-    picName := reg.FindString(data.Picture)
-    // //upPic := strings.Replace(data.Picture, "C:/fakepath/", "", 1) // [Cから始まって最後の/] までが理想
-    // log.Println("upPic:", upPic)
 
 	// if _, err := os.Stat(upPic); err == nil {
 	// 	fmt.Println("存在します")
@@ -286,23 +269,46 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
 	// } else {
 	// 	panic("Couldn't stat image: " + err.Error())
 	// }
+
     // file, _ := os.Open(*uppic) //failed to upload file, %vReadRequestBody: unable to initialize upload caused by: invalid argument
+    //👆openするファイルのパスがmain.goからの相対パスではなく、絶対パスだから...?
     // log.Println("file:", file)
     // defer file.Close()
-    var uppic *string 
-    uppic = &data.Picture // *string型が格納
-    log.Println("uppic:", uppic)
-    // file, _ := os.Open(*uppic) 
-    // log.Println("file:", file)
-    // defer file.Close()
+
+    fmt.Println("r:", r) 
+    log.Println("method:", r.Method) //リクエストを受け取るメソッド
+    r.ParseMultipartForm(32 << 20) //画像データをデコードしてファイルとして保存  引数にはメモリに保存する最大バイト長を指定 32MB
+    file, handler, err := r.FormFile("sakuhin") //パースした画像データをファイルとして扱う パース...データを解析しプログラムにとって扱いやすい形にする htmlタグのnameの名前
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    defer file.Close()
+    
+    
+    fmt.Fprintf(w, "%v", handler.Header)
+    f, err := os.OpenFile("./upload/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+    // f.Header.Add("Content-Type", r.FormDataContentType())
+    // O_WRONLY int = syscall.O_WRONLY // ファイルをライトオンリーでオープン
+    // O_CREATE int = syscall.O_CREAT // ファイルが存在しなければ新しいファイルを作成
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    defer f.Close()
+    io.Copy(f, file)
+    fmt.Println("f:", f)
+
+
 
     // Upload the file to S3.
     myBucket :=os.Getenv("Bucket_name")
     result, err := uploader.Upload(&s3manager.UploadInput{
         Bucket: aws.String(myBucket), 
-        Key:    aws.String(picName), 
-        Body:   strings.NewReader(*uppic),//file, 変えたらダウンロードしなくなった！画像になった！ ⇦サイズが合わない＆画像見れないのはファイルを読み込んでないから？？
-        ContentType:   aws.String("image/jpeg"),
+        Key:    aws.String(handler.Filename),//aws.String("file"),//aws.String(picName), 
+        Body:   f,//strings.NewReader(*uppic),//file, strings.NewReader(*uppic)に変えたらダウンロードしなくなった！画像になった！ ⇦サイズが合わない＆画像見れないのはファイルを読み込んでないから？？
+        // ContentType:   aws.String("image/jpeg"),
     })
     if err != nil {
         log.Fatal("failed to upload file, %v", err)
