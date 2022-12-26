@@ -7,7 +7,7 @@ migrate create -ext sql -dir db/migrations -seq create_ファイル名
 ```bash
 migrate -source file://db/migrations -database "mysqlのURL" up
 ```
-## 要 backendコンテナ内でのAWS CLIのインストール
+## コンテナが立った後に backendコンテナ内でのAWS CLIのインストール必要
 credential情報が登録されているかの確認
 コンテナに入り👇
 ```bash
