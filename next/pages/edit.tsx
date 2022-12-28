@@ -48,12 +48,13 @@ export default function Home(responce: responceObj) {
     }
     const postPicture = () =>{ 
         const data = {
-            "Picture": picture
+            "Picture": picture,
         }
-        Axios.post(`api/proxy/uploadS3`, data)
-        // .then(res => {
-        //     console.log(res);
-        // })
+        Axios.post(`api/proxy/uploadS3`, data, {headers: {'Content-type': 'multipart/form-data'}})
+        .then(res => {
+            console.log(res);
+            console.log("test")
+        })
     }
 
     const showHistory  = () => {
@@ -112,8 +113,8 @@ export default function Home(responce: responceObj) {
                         <button type="submit">送信する</button>
                     </form>
                 </div>
-                        {console.log(picture)}
-                        {console.log(typeof picture)}
+                        {/* {console.log(picture)}
+                        {console.log(typeof picture)} */}
                 <div className='skills'>
                     <h2>skills</h2>
                     <div text-align="left">{/*imgタグ１つ準備して、srcの中身をAPIで拾ってループ回す */}
