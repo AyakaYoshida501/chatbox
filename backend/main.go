@@ -275,12 +275,14 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     // log.Println("file:", file)
     // defer file.Close()
 
-    fmt.Println("r:", r) 
-    log.Println("method:", r.Method) //リクエストを受け取るメソッド
+    // fmt.Println("r:", r) 
+    log.Print("method:", r.Method) //リクエストを受け取るメソッド
     r.ParseMultipartForm(32 << 20) //画像データをデコードしてファイルとして保存  引数にはメモリに保存する最大バイト長を指定 32MB
-    file, handler, err := r.FormFile("sakuhin") //パースした画像データをファイルとして扱う パース...データを解析しプログラムにとって扱いやすい形にする htmlタグのnameの名前
+    // file, handler, err := r.FormFile("sakuhin") //パースした画像データをファイルとして扱う パース...データを解析しプログラムにとって扱いやすい形にする htmlタグのnameの名前
+    file, handler, err := r.FormFile("Picture")
     if err != nil {
-        fmt.Println(err)
+        log.Printf("パースするときのerr:", err)
+        // http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
     defer file.Close()
@@ -292,7 +294,7 @@ func uploadS3(w http.ResponseWriter, r *http.Request) {
     // O_WRONLY int = syscall.O_WRONLY // ファイルをライトオンリーでオープン
     // O_CREATE int = syscall.O_CREAT // ファイルが存在しなければ新しいファイルを作成
     if err != nil {
-        fmt.Println(err)
+        log.Printf("ファイルを読み取って作成するときのerr:", err)
         return
     }
 

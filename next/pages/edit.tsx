@@ -47,9 +47,11 @@ export default function Home(responce: responceObj) {
         // })
     }
     const postPicture = () =>{ 
-        const data = {
-            "Picture": picture,
-        }
+        // const data = {
+        //     "Picture": picture,
+        // }
+        const data = new FormData();
+        data.append('Picture', picture);
         Axios.post(`api/proxy/uploadS3`, data, {headers: {'Content-type': 'multipart/form-data'}})
         .then(res => {
             console.log(res);
@@ -108,7 +110,7 @@ export default function Home(responce: responceObj) {
                 </div>
                 <div className='projects'>
                     <h2>作ったもの</h2>
-                    <form method="post" encType="multipart/form-data" onSubmit={postPicture}>
+                    <form method="post" encType="multipart/form-data" onSubmit={postPicture} /*action={`${Axios.post(`api/proxy/uploadS3`)}`}*/ >
                         <input type="file" name="sakuhin" accept='image/*' multiple value={picture} onChange={(e) => setPicture(e.target.value)}/>
                         <button type="submit">送信する</button>
                     </form>
