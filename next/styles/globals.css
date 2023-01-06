@@ -5,6 +5,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
     white-space: pre-wrap;
+  text-align: center;
 }
 
 a {
@@ -25,6 +26,10 @@ a {
 .icons {
   display: inline-block;
 }
+/* .madeByMe {
+  display: flex;
+} */
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

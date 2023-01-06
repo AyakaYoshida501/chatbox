@@ -55,12 +55,14 @@ const showIcons = () => {
           <h2>経歴</h2>
           {showHistory()}
         </div>
-        <div className='projects'>
-          <h2>作ったもの</h2>
-        </div>
-        <div className='skills'>
-          <h2>skills</h2>
-          {showIcons()}
+        <div className='madeByMe'>
+          <div className='projects'>
+            <h2>作ったもの</h2>
+          </div>
+          <div className='skills'>
+            <h2>skills</h2>
+            {showIcons()}
+          </div>
         </div>
       </main>
 
